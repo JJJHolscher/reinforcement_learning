@@ -846,3 +846,269 @@ def value_iter_q(env, theta=0.0001, discount_factor=1.0):
     # YOUR CODE HERE
     raise NotImplementedError
     return policy, Q
+
+def value_iter_q(env, theta=0.0001, discount_factor=1.0):
+    """
+    Q-value Iteration Algorithm.
+    
+    Args:
+        env: OpenAI env. env.P represents the transition probabilities of the environment.
+            env.P[s][a] is a list of transition tuples (prob, next_state, reward, done).
+            env.nS is a number of states in the environment. 
+            env.nA is a number of actions in the environment.
+        theta: We stop evaluation once our value function change is less than theta for all state-action pairs.
+        discount_factor: Gamma discount factor.
+
+    Returns:
+        A tuple (policy, Q) of the optimal policy and the optimal Q-value function.
+    """
+    
+    # Start with an all 0 Q-value function
+    Q = np.zeros((env.nS, env.nA))
+    
+    delta = float('inf')
+    while delta > theta:
+        delta = 0
+
+        for state in range(env.nS):
+            for action in range(env.nS):
+                prob, new_state, reward, _ = env.P[state][action][0]
+                old_state_value = Q[state][action]
+                Q[state][action] = prob * (reward + discount_factor * max(Q[new_state]))
+                delta = max(delta, abs(old_state_value - Q[state][action]))
+
+    
+    print(Q)
+    print(np.sum(Q, axis=1))
+    policy = Q / np.sum(Q, axis=1)
+    print(policy)
+
+    return policy, Q
+
+def value_iter_q(env, theta=0.0001, discount_factor=1.0):
+    """
+    Q-value Iteration Algorithm.
+    
+    Args:
+        env: OpenAI env. env.P represents the transition probabilities of the environment.
+            env.P[s][a] is a list of transition tuples (prob, next_state, reward, done).
+            env.nS is a number of states in the environment. 
+            env.nA is a number of actions in the environment.
+        theta: We stop evaluation once our value function change is less than theta for all state-action pairs.
+        discount_factor: Gamma discount factor.
+
+    Returns:
+        A tuple (policy, Q) of the optimal policy and the optimal Q-value function.
+    """
+    
+    # Start with an all 0 Q-value function
+    Q = np.zeros((env.nS, env.nA))
+    
+    delta = float('inf')
+    while delta > theta:
+        delta = 0
+
+        for state in range(env.nS):
+            for action in range(env.nA):
+                prob, new_state, reward, _ = env.P[state][action][0]
+                old_state_value = Q[state][action]
+                Q[state][action] = prob * (reward + discount_factor * max(Q[new_state]))
+                delta = max(delta, abs(old_state_value - Q[state][action]))
+
+    
+    print(Q)
+    print(np.sum(Q, axis=1))
+    policy = Q / np.sum(Q, axis=1)
+    print(policy)
+
+    return policy, Q
+
+def value_iter_q(env, theta=0.0001, discount_factor=1.0):
+    """
+    Q-value Iteration Algorithm.
+    
+    Args:
+        env: OpenAI env. env.P represents the transition probabilities of the environment.
+            env.P[s][a] is a list of transition tuples (prob, next_state, reward, done).
+            env.nS is a number of states in the environment. 
+            env.nA is a number of actions in the environment.
+        theta: We stop evaluation once our value function change is less than theta for all state-action pairs.
+        discount_factor: Gamma discount factor.
+
+    Returns:
+        A tuple (policy, Q) of the optimal policy and the optimal Q-value function.
+    """
+    
+    # Start with an all 0 Q-value function
+    Q = np.zeros((env.nS, env.nA))
+    
+    delta = float('inf')
+    while delta > theta:
+        delta = 0
+
+        for state in range(env.nS):
+            for action in range(env.nA):
+                prob, new_state, reward, _ = env.P[state][action][0]
+                old_state_value = Q[state][action]
+                Q[state][action] = prob * (reward + discount_factor * max(Q[new_state]))
+                delta = max(delta, abs(old_state_value - Q[state][action]))
+
+    
+    print(Q)
+    print(np.sum(Q, axis=1))
+    policy = Q / np.unsqueeze(np.sum(Q, axis=1))
+    print(policy)
+
+    return policy, Q
+
+def value_iter_q(env, theta=0.0001, discount_factor=1.0):
+    """
+    Q-value Iteration Algorithm.
+    
+    Args:
+        env: OpenAI env. env.P represents the transition probabilities of the environment.
+            env.P[s][a] is a list of transition tuples (prob, next_state, reward, done).
+            env.nS is a number of states in the environment. 
+            env.nA is a number of actions in the environment.
+        theta: We stop evaluation once our value function change is less than theta for all state-action pairs.
+        discount_factor: Gamma discount factor.
+
+    Returns:
+        A tuple (policy, Q) of the optimal policy and the optimal Q-value function.
+    """
+    
+    # Start with an all 0 Q-value function
+    Q = np.zeros((env.nS, env.nA))
+    
+    delta = float('inf')
+    while delta > theta:
+        delta = 0
+
+        for state in range(env.nS):
+            for action in range(env.nA):
+                prob, new_state, reward, _ = env.P[state][action][0]
+                old_state_value = Q[state][action]
+                Q[state][action] = prob * (reward + discount_factor * max(Q[new_state]))
+                delta = max(delta, abs(old_state_value - Q[state][action]))
+
+    
+    print(Q)
+    print(np.unsqueeze(np.sum(Q, axis=1)).T)
+    policy = Q / np.unsqueeze(np.sum(Q, axis=1)).T
+    print(policy)
+
+    return policy, Q
+
+def value_iter_q(env, theta=0.0001, discount_factor=1.0):
+    """
+    Q-value Iteration Algorithm.
+    
+    Args:
+        env: OpenAI env. env.P represents the transition probabilities of the environment.
+            env.P[s][a] is a list of transition tuples (prob, next_state, reward, done).
+            env.nS is a number of states in the environment. 
+            env.nA is a number of actions in the environment.
+        theta: We stop evaluation once our value function change is less than theta for all state-action pairs.
+        discount_factor: Gamma discount factor.
+
+    Returns:
+        A tuple (policy, Q) of the optimal policy and the optimal Q-value function.
+    """
+    
+    # Start with an all 0 Q-value function
+    Q = np.zeros((env.nS, env.nA))
+    
+    delta = float('inf')
+    while delta > theta:
+        delta = 0
+
+        for state in range(env.nS):
+            for action in range(env.nA):
+                prob, new_state, reward, _ = env.P[state][action][0]
+                old_state_value = Q[state][action]
+                Q[state][action] = prob * (reward + discount_factor * max(Q[new_state]))
+                delta = max(delta, abs(old_state_value - Q[state][action]))
+
+    
+    print(Q)
+    print(np.expand_dims(np.sum(Q, axis=1), axis=0))
+    policy = Q / np.expand_dims(np.sum(Q, axis=1), axis=0)
+    print(policy)
+
+    return policy, Q
+
+def value_iter_q(env, theta=0.0001, discount_factor=1.0):
+    """
+    Q-value Iteration Algorithm.
+    
+    Args:
+        env: OpenAI env. env.P represents the transition probabilities of the environment.
+            env.P[s][a] is a list of transition tuples (prob, next_state, reward, done).
+            env.nS is a number of states in the environment. 
+            env.nA is a number of actions in the environment.
+        theta: We stop evaluation once our value function change is less than theta for all state-action pairs.
+        discount_factor: Gamma discount factor.
+
+    Returns:
+        A tuple (policy, Q) of the optimal policy and the optimal Q-value function.
+    """
+    
+    # Start with an all 0 Q-value function
+    Q = np.zeros((env.nS, env.nA))
+    
+    delta = float('inf')
+    while delta > theta:
+        delta = 0
+
+        for state in range(env.nS):
+            for action in range(env.nA):
+                prob, new_state, reward, _ = env.P[state][action][0]
+                old_state_value = Q[state][action]
+                Q[state][action] = prob * (reward + discount_factor * max(Q[new_state]))
+                delta = max(delta, abs(old_state_value - Q[state][action]))
+
+    
+    print(Q)
+    print(np.expand_dims(np.sum(Q, axis=1), axis=0))
+    policy = Q / np.expand_dims(np.sum(Q, axis=1), axis=0)
+    print(policy)
+
+    return policy, Q
+
+def value_iter_q(env, theta=0.0001, discount_factor=1.0):
+    """
+    Q-value Iteration Algorithm.
+    
+    Args:
+        env: OpenAI env. env.P represents the transition probabilities of the environment.
+            env.P[s][a] is a list of transition tuples (prob, next_state, reward, done).
+            env.nS is a number of states in the environment. 
+            env.nA is a number of actions in the environment.
+        theta: We stop evaluation once our value function change is less than theta for all state-action pairs.
+        discount_factor: Gamma discount factor.
+
+    Returns:
+        A tuple (policy, Q) of the optimal policy and the optimal Q-value function.
+    """
+    
+    # Start with an all 0 Q-value function
+    Q = np.zeros((env.nS, env.nA))
+    
+    delta = float('inf')
+    while delta > theta:
+        delta = 0
+
+        for state in range(env.nS):
+            for action in range(env.nA):
+                prob, new_state, reward, _ = env.P[state][action][0]
+                old_state_value = Q[state][action]
+                Q[state][action] = prob * (reward + discount_factor * max(Q[new_state]))
+                delta = max(delta, abs(old_state_value - Q[state][action]))
+
+    
+    print(Q)
+    print(np.expand_dims(np.sum(Q, axis=1), axis=1))
+    policy = Q / np.expand_dims(np.sum(Q, axis=1), axis=1)
+    print(policy)
+
+    return policy, Q
