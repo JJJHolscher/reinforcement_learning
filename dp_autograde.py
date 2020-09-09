@@ -132,6 +132,7 @@ def value_iter_q(env, theta=0.0001, discount_factor=1.0):
                 Q[state][action] = prob * (reward + discount_factor * max(Q[new_state]))
                 delta = max(delta, abs(old_state_value - Q[state][action]))
 
-    policy = Q / np.expand_dims(abs(np.sum(Q, axis=1)), axis=1)
-    policy[np.isnan(policy)] = 0
+    policy = np.expand_dims(np.max(Q, axis=1), axis=1) @ np.ones((1, Q.shape[1]))
+    policy = (policy == Q).astype(float)
+    policy /= np.expand_dims(np.sum(policy, axis=1), axis=1)
     return policy, Q
