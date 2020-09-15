@@ -23,11 +23,11 @@ class EpsilonGreedyPolicy(object):
         Returns:
             An action (int).
         """
-        if random.random() > self.epsilon:
-            action = np.argmax(self.Q[obs])
+        if np.random.random() >= self.epsilon:
+            action = int(np.argmax(self.Q[obs]))
         
         else:
-            action = random.randrange(len(self.Q[obs]))
+            action = int(np.random.randint(0, len(self.Q[obs])))
         return action
 
 def sarsa(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
