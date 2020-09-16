@@ -12,11 +12,7 @@ class SimpleBlackjackPolicy(object):
     A simple BlackJack policy that sticks with 20 or 21 points and hits otherwise.
     """
     
-    def get_probs(self, state, actions):
-
-
-#         print("state", state)
-#         print("actions", actions)
+    def get_probs(self, states, actions):
         """
         je krijgt dus de state binnen en dan alle mogelijk acties voor die state. 
         Hit or stick. Je moet dan per actie de kans bepalen dat je die actie gaat uitvoeren
@@ -32,50 +28,14 @@ class SimpleBlackjackPolicy(object):
         """
         
         probs = []
-
-# loop door de states
-# bekijke wat de state waarde 
-# loop door acties
-# als je actie hit zou zijn obv state en dat is ook de actie die je binnen krijgt > zet prob op 100
-# anders zet prob op 0
-
-
-        for action in actions:
-#             print("state[0]", state[0])
-            hand_sum = state[0][0]
-#             print("HAND SUM", hand_sum)
-            
-#             print("current state", hand_sum)
-#             print("current action", action)
-                
-#               nu wil je stoppen dus action = 0
-            if hand_sum < 20:
-                recommended_action = 1
-
-#                   als wat je zou aanbevelen en wat de gebruiker wilt overeenkomen, prob > 100 procent
-                if recommended_action == action:
-
-                    probs.append(1)
-                    
-                else:
-                    probs.append(0)
-
-
-            if hand_sum == 20 or hand_sum == 21:
-                recommended_action = 0
-
-                if recommended_action == action:
-
-                    probs.append(1)
-                else:
-                    probs.append(0)
-
-                        
-#         print("END PROBS", probs)
+        for i, state in enumerate(states):
+            if actions[i] == self.sample_action(state):
+                probs.append(1.0)
+            else:
+                probs.append(0.0)
         return np.array(probs)
     
     def sample_action(self, state):
-#         print("current state", state)
         """
         This method takes a state as input and returns an action sampled from this policy.  
 
@@ -85,18 +45,8 @@ class SimpleBlackjackPolicy(object):
         Returns:
             An action (int).
         """
-#       hit
-        if state[0] < 20:
-            action = 1
-
-#       stick
-        if state[0] == 20 or state[0] == 21:
-            action = 0
-
-    
-        
+        action = 1 if state[0] < 20 else 0
         return action
-     
 
 def sample_episode(env, policy):
     """
@@ -120,46 +70,24 @@ def sample_episode(env, policy):
     done = False
 
 
-    # begin met een starting state en bepaal actie
-    new_state = env.reset()
-    states.append(new_state)
-#     print("start", new_state)
-    
-    #voer acties uit en zolang je niet door bent blijf je doorgaan 
-    while done != True:
-        
-        action = policy.sample_action(new_state)
-#         print("ACTION", action)
+    states = []
+    actions = []
+    rewards = []
+    dones = []
+
+    state = env.reset()
+    done = False
+
+    while not done:
+        states.append(state)
+        action = policy.sample_action(state)
         actions.append(action)
 
-#         print("ACTION HIER", action)
-        try:
-            if len(action) == 1:
-                action = action[0]
-            
-        except:
-            None
-        new_env = env.step(action)
-#         print("new", new_env)
-        
-        done = new_env[2]
+        state, reward, done, _ = env.step(action)
+        rewards.append(reward)
         dones.append(done)
 
-        
-        
-        new_state = new_env[0]
-        
-        # voeg alleen states toe als je niet in de terminate state bent gekomen .. dit zegt de hint
-        if done == False:
-            states.append(new_state)
-        
-        
-        reward = new_env[1]
-        rewards.append(reward)
-        
-
     return states, actions, rewards, dones
-
 
 def mc_prediction(env, policy, num_episodes, discount_factor=1.0, sampling_function=sample_episode):
     
@@ -181,68 +109,29 @@ def mc_prediction(env, policy, num_episodes, discount_factor=1.0, sampling_funct
     # Keeps track of current V and count of returns for each state
     # to calculate an update.
     V = defaultdict(float)
-    returns_count = (float)
+    returns_count = defaultdict(float)
     
-    # initialize all state values arbirarly
-    # initialize an empty list for all states
+    for _ in range(num_episodes):
+        states, _, rewards, _ = sampling_function(env, policy)
+        G = 0
+        passed_states = set()
+
+        for t in range(len(states) - 1, -1, -1):
+            G = discount_factor * G + rewards[t]
+            state = states[t]
+            if state not in passed_states:
+                returns_count[state] += 1
+                V[state] += G   
     
-    
-    for i in tqdm(range(num_episodes)):
-        data = sample_episode(env, policy)
-#         print(data)
-        visited_states = data[0]
-        
-        # voeg nu elke state die je bent tegengekomen toe aan je dict
-        for state in visited_states:
-            
-            # als state nog niet in V zit voeg toe
-            if state not in V:
-                V[state] = []
-
-        g = 0
-#         loop reversed throw the trajectory
-#         print("state", data[0])
-        data[0].reverse()
-        data[2].reverse()
-
-        #loop door de trajectory
-        for state, reward in ( zip(data[0], data[2]) ):
-            
-            #bereken de waarde van die state door de directe reward van het spel te pakken. Deze waarde geldt dan voor hele trajectory
-            g += discount_factor * reward
-#             print("G", g)
-            
-            # update nu de state uit de trajectory met deze reward
-            current_list = V[state]
-#             print("CURRENT LIST", current_list)
-            current_list.append(g)
-#             print("UPDATED", current_list)
-            V[state] = current_list
-
-
-#     print("@@@", V)
-    for key, value in V.items():
-        V[key] = sum(value) / len(value)
-#         print(key, value)
-        
-    #loop door alle states in de dict
-    # pak de lijst per state
-    # avg de lijst en vervang daarmee de huidige lijst voor die stata
-
-    
+    for state, count in returns_count.items():
+        V[state] /= count
     return V
-
-# num_episodes=10000
-V_10k = mc_prediction(env, SimpleBlackjackPolicy(), num_episodes=10000)
-print(V_10k)
 
 class RandomBlackjackPolicy(object):
     """
     A random BlackJack policy.
     """
     def get_probs(self, states, actions):
-#         print("STATES", states)
-#         print("ACTIONS", actions)
         """
         This method takes a list of states and a list of actions and returns a numpy array that contains 
         a probability of perfoming action in given state for every corresponding state action pair. 
@@ -253,15 +142,8 @@ class RandomBlackjackPolicy(object):
 
         Returns:
             Numpy array filled with probabilities (same length as states and actions)
-        """
-        # YOUR CODE HERE
-        
-        probs = len(states) * [0.5]
-#         print("probs", probs)
-        
-        
-        
-        
+        """        
+        probs = np.array(len(states) * [0.5])
         return probs
     
     def sample_action(self, state):
@@ -274,13 +156,8 @@ class RandomBlackjackPolicy(object):
         Returns:
             An action (int).
         """
-        #       hit
-        action = np.random.randint(low=0.0, high=2.0, size = 1)
-#         print("action", action)
-        
-
-            
-        return action
+        action = np.random.randint(low=0, high=2, size = 1)        
+        return int(action)
 
 def mc_importance_sampling(env, behavior_policy, target_policy, num_episodes, discount_factor=1.0,
                            sampling_function=sample_episode):
@@ -342,8 +219,8 @@ def mc_importance_sampling(env, behavior_policy, target_policy, num_episodes, di
 #             print("reward", reward)
 #             print("action", action)
             
-            target_policy_prob *= target_policy.get_probs([state], [0, 1])[action[0]] # [0 , 1] prob for stick and prob for hit
-            behavioural_policy_prob *= behavior_policy.get_probs(state, [0, 1])[action[0]]
+            target_policy_prob *= target_policy.get_probs([state, state], [0, 1])[action] # [0 , 1] prob for stick and prob for hit
+            behavioural_policy_prob *= behavior_policy.get_probs([state, state], [0, 1])[action]
 #             behavioural_policy_prob *= behavior_policy.get_probs(state)[0]
 #             print("tar", target_policy_prob)
 #             print("beh", behavioural_policy_prob)
@@ -376,11 +253,5 @@ def mc_importance_sampling(env, behavior_policy, target_policy, num_episodes, di
 
     # Keeps track of current V and count of returns for each state
     # to calculate an update.
-
-    
-    # YOUR CODE HERE
     
     return V
-
-V_10k = mc_importance_sampling(env, RandomBlackjackPolicy(), SimpleBlackjackPolicy(), num_episodes=10)
-print(V_10k)
