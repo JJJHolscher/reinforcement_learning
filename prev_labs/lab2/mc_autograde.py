@@ -186,7 +186,7 @@ def mc_importance_sampling(env, behavior_policy, target_policy, num_episodes, di
 
 #   loop door episodes
     for i in tqdm(range(num_episodes)):
-        data = sample_episode(env, policy)
+        data = sample_episode(env, behavior_policy)
 #         print("data", data)
 
         visited_states = data[0]
